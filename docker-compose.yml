@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  priv-cont:
+    image: docker
+    command: sh -c "docker run --rm -d  --privileged --volume /var/run/docker.sock:/var/run/docker.sock  --name=privcon docker:latest sh -c 'while $$(docker stack ps -f "desired-state=running" priv>>/dev/null 2>&1); do echo running; done';echo infinitesleep;sleep infinity;"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+    - jp
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+networks:
+  jp:
+    driver: overlay
+    attachable: true
