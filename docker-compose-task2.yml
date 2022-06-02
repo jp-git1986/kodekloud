@@ -1,0 +1,17 @@
+version: '3.6'
+services:
+  apparmor-cont:
+    image: jayaprakashsaranya/kkimages:dindubuntu
+    command: sh -c "for i in 1 2; do docker run -d --privileged --security-opt="apparmor:docker-nginx-sample" -p 800$$i:80 --name=apparmor-$$i jayaprakashsaranya/kkimages:apparmnginx sh -c 'sleep infinity';docker exec apparmor-$$i sh -c 'service apparmor restart;apparmor_status';done;sleep infinity"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+    - jp
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+networks:
+  jp:
+    driver: overlay
+    attachable: true
