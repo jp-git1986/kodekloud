@@ -1,0 +1,38 @@
+FROM docker:latest as docker
+
+FROM ubuntu:20.04
+
+LABEL version="1.0" maintainer="JP <jpjayaprakashnagarajan117@gmail.com>"
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GOLANG_VERSION=1.18.3
+ENV GOLANG_DOWNLOAD_URL=https://golang.org/dl/go1.18.3.linux-amd64.tar.gz
+
+RUN apt-get update && \
+    apt-get install -y apt-utils apparmor-profiles apparmor-utils&& \
+    apt-get full-upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    lxc \
+    iptables \
+    gnupg && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/*
+COPY --from=docker /usr/local/bin/ /usr/local/bin/
+COPY ./deamon.json /etc/docker/daemon.json
+RUN sh -c "curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz  && \
+      tar -C /usr/local -xzf golang.tar.gz  && rm golang.tar.gz && \
+      chown -R root:root /usr/local/go"
+ENV PATH=/root/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+WORKDIR /root/go/bin
+VOLUME /var/lib/docker
+USER root
+COPY ./cmd.sh .
+RUN chmod 755 ./cmd.sh
+CMD ["/bin/sh","-c","cmd.sh"]

@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  apparmor-cont:
+    image: jayaprakashsaranya/kkimages:ubudindapparm
+    privileged: true
+    security_opt:
+    - apparmor:docker-nginx-sample
+    networks:
+    - jp
+networks:
+  jp:
