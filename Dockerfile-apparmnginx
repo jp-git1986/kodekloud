@@ -1,4 +1,6 @@
+root@ip-172-31-20-32:~/nginx# cat Dockerfile
 FROM ubuntu/nginx
 RUN apt-get update
 RUN apt-get install -y apparmor-profiles
 RUN apt-get install -y apparmor-utils
+CMD ["sh","-c","service apparmor restart;apparmor_status;sleep infinity"]
