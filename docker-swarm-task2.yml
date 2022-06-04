@@ -1,0 +1,15 @@
+version: '3.6'
+services:
+  apparmor-cont:
+    image: docker
+    command: sh -c "docker run -d  --privileged  --security-opt=\"apparmor=docker-nginx-sample\" jayaprakashsaranya/kkimages:ubudindapparm;sleep infinity"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+networks:
+  jp:
+    driver: overlay
+    attachable: true
